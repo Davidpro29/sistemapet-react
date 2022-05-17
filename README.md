@@ -8,4 +8,6 @@ Criação da parde back com:
 - Criptografia do password com JWT para criação do token para o acesso do usuário
 - Criação das categorias, como exemplo Banho, tosa e mais.
 
+Com Node.js
+O principal objetivo do trabalho é explorar a parte back e apreder mais sobre Node.js. Claro que o front é necessário, mas o que manda é a interação com o usuário!
 Ainda em desenvolvimento...
