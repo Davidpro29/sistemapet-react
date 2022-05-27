@@ -11,6 +11,7 @@ import {AuthContext} from '../../contexts/AuthContext'
 export function Header(){
 
     const {signOut} = useContext(AuthContext)
+    
     return(
         <header className={styles.headerContainer}>
             <div className={styles.headerContent}>
