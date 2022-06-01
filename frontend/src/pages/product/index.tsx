@@ -1,174 +1,192 @@
-
-import{useState, ChangeEvent, FormEvent} from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react'
 import Head from 'next/head';
 import styles from './styles.module.scss';
-import {Header} from '../../components/Header';
-import Image from 'next/image';
+import {Header} from '../../components/Header'
 
-import {setupAPIClient} from '../../services/api';
+import { canSSRAuth } from '../../utils/canSSRAuth'
 
-import {canSSRAuth} from '../../utils/canSSRAuth'
+import { FiUpload } from 'react-icons/fi'
 
-import {FiUpload} from 'react-icons/fi'
-import {toast} from 'react-toastify';
+import { setupAPIClient } from '../../services/api'
 
-type ItemProps ={
-    id: string;
-    name: string;
+import { toast } from 'react-toastify'
+
+type ItemProps = {
+  id: string;
+  name: string;
 }
 
 interface CategoryProps{
-    categoryList: ItemProps[];
+  categoryList: ItemProps[];
 }
 
-export default function Product({categoryList}: CategoryProps){
+export default function Product({ categoryList }: CategoryProps){
 
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
-    const [description, setDescription] = useState('');
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');
 
-    const [avatarUrl, setAvatarUrl] = useState('')
-    const [imageAvatar, setImageAvatar] = useState(null)
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [imageAvatar, setImageAvatar] = useState(null);
 
-    const [categories, setCategories] = useState(categoryList || [])
-    const [categorySelected, setCategorySelected] = useState(0)
+  const [categories, setCategories] = useState(categoryList || [])
+  const [categorySelected, setCategorySelected] = useState(0)
 
-    function handleFile(e: ChangeEvent<HTMLInputElement>){
-        if(!e.target.files){
-            return;
-        }
 
-        const image = e.target.files[0];
-        if(!image){
-            return;
-        }
+  function handleFile(e: ChangeEvent<HTMLInputElement>){
 
-        if(image.type === 'image/png' || image.type ==='image/jpeg'){
-            setImageAvatar(image);
-            setAvatarUrl(URL.createObjectURL(e.target.files[0]))
-        }
+    if(!e.target.files){
+      return;
     }
 
-    function handleChangeCategory(event){
-        // console.log('Categoria selecionada', event.target.value)
-        // console.log('Categoria selecionada', [event.target.value])
-        setCategorySelected(event.target.value)
+    const image = e.target.files[0];
+
+    if(!image){
+      return;
     }
 
-    async function handleRegister(event: FormEvent){
-        event.preventDefault();
-        try{
-            const data = new FormData();
+    if(image.type === 'image/jpeg' || image.type === 'image/png'){
 
-            if(name === '' || price === '' || imageAvatar === null || description === ''){
-                toast.error('Preencha todos os campos');
-                return;
-            }
-
-            data.append('name', name)
-            data.append('price', price)
-            data.append('description', description)
-            data.append('category_id', categories[categorySelected].id)
-            data.append('file', imageAvatar)
-
-            const apiClient = setupAPIClient();
-            await apiClient.post('/product', data)
-
-            toast.success('Cadastrado com sucesso!')
-
-        }catch(err){
-            console.log(err);
-            toast.error('Opa, não foi possível cadastrar!')
-        }
-
-        setName('');
-        setPrice('');
-        setDescription('');
-        setImageAvatar(null);
-        setAvatarUrl('');
+      setImageAvatar(image);
+      setAvatarUrl(URL.createObjectURL(e.target.files[0]))
 
     }
 
-    return (
-        <>
-            <Head>
-                <title>Serviço - FePet</title>
-            </Head>  
-            <div>
-                <Header />
-                <main className ={styles.container}>
-                    <h1>Selecione o serviço</h1>
+  }
 
-                    <form className={styles.form} onSubmit={handleRegister}>
+  //Quando você seleciona uma nova categoria na lista
+  function handleChangeCategory(event){
+    // console.log("POSICAO DA CATEGORIA SELECIONADA ", event.target.value)
+   //console.log('Categoria selecionada ', categories[event.target.value])
 
-                        <label className={styles.labelAvatar}>
-                            <span>
-                                <FiUpload size={25} color="#fff" />
-                            </span>
+    setCategorySelected(event.target.value)
 
-                            <input type="file" accept="image/png, image/jpeg" onChange={handleFile}/>
+  }
 
-                            {avatarUrl && (
-                                <Image
-                                className={styles.preview}
-                                src={avatarUrl}
-                                alt="foto do produto"
-                                width={250}
-                                height={250}
-                            />
-                            )}
+  async function handleRegister(event: FormEvent){
+    event.preventDefault();
 
-                        </label>
+    try{
+      const data = new FormData();
 
-                        <select value={categorySelected} onChange={handleChangeCategory}>
-                            {categories.map( (item, index) => {
-                                return (
-                                    <option key={item.id} value={index}>
-                                        {item.name}
-                                    </option>
-                                )
-                            })}
-                        </select>
+      if(name === '' || price === '' || description === '' || imageAvatar === null){
+        toast.error("Preencha todos os campos!");
+        return;
+      }
 
-                        <input 
-                        type="text"
-                        placeholder='Numero id e nome do cliente'
-                        className={styles.input}
-                        value={name}
-                        onChange={ (e) => setName(e.target.value)}
-                        />    
+      data.append('name', name);
+      data.append('price', price);
+      data.append('description', description);
+      data.append('category_id', categories[categorySelected].id);
+      data.append('file', imageAvatar);
 
-                        <input 
-                        type="text"
-                        placeholder='Selecione o preço'
-                        className={styles.input}
-                        value={price}
-                        onChange={ (e) => setPrice(e.target.value)}
-                        />                                          
+      const apiClient = setupAPIClient();
 
-                        <textarea
-                        placeholder="Cão ou gatinho? Nome, raça, porte, idade, sexo e observações sobre o pet"
-                        className={styles.input}
-                        value={description}
-                        onChange={ (e) => setDescription(e.target.value)}
-                        />                      
+      await apiClient.post('/product', data);
 
-                        <button className={styles.buttonAdd}>
-                            Cadastrar
-                        </button>
-                    </form>
-                </main>
-            </div>
-        </>
-              
-)}
+      toast.success('Cadastrado com sucesso!')
 
-export const getServerSideProps = canSSRAuth(async (ctx) =>{
+    }catch(err){
+      console.log(err);
+      toast.error("Ops erro ao cadastrar!")
+    }
 
-    const apiClient = setupAPIClient(ctx);
-    const response = await  apiClient.get('/category')
-    
-    return{props:{
-        categoryList: response.data
-    }}
+    setName('');
+    setPrice('');
+    setDescription('')
+    setImageAvatar(null);
+    setAvatarUrl('');
+
+  }
+
+  return(
+    <>
+      <Head>
+        <title>Novo produto - Sujeito Pizzaria</title>
+      </Head>
+      <div>
+        <Header/>
+
+        <main className={styles.container}>
+          <h1>Novo produto</h1>
+
+          <form className={styles.form} onSubmit={handleRegister}>
+
+            <label className={styles.labelAvatar}>
+              <span>
+                <FiUpload size={30} color="#FFF" />
+              </span>
+
+              <input type="file" accept="image/png, image/jpeg" onChange={handleFile} />
+
+              {avatarUrl && (     
+                  <img 
+                    className={styles.preview}
+                    src={avatarUrl}
+                    alt="Foto do produto" 
+                    width={250}
+                    height={250}
+                  />
+              )}
+
+            </label>
+
+
+            <select value={categorySelected} onChange={handleChangeCategory} >
+                {categories.map( (item, index) => {
+                  return(
+                    <option key={item.id} value={index}>
+                      {item.name}
+                    </option>
+                  )
+                })}
+            </select>
+
+            <input 
+            type="text"
+            placeholder="Digite o nome do produto"
+            className={styles.input}
+            value={name}
+            onChange={ (e) => setName(e.target.value) }
+            />
+
+            <input 
+            type="text"
+            placeholder="Preço do produto"
+            className={styles.input}
+            value={price}
+            onChange={ (e) => setPrice(e.target.value) }
+            />      
+
+            <textarea 
+              placeholder="Descreva seu produto..."
+              className={styles.input}
+              value={description}
+              onChange={ (e) => setDescription(e.target.value) }
+            /> 
+
+            <button className={styles.buttonAdd} type="submit">
+              Cadastrar  
+            </button>   
+
+          </form>
+
+        </main>
+
+      </div>
+    </>
+  )
+}
+
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+  const apliClient = setupAPIClient(ctx)
+
+  const response = await apliClient.get('/category');
+  //console.log(response.data);
+
+  return {
+    props: {
+      categoryList: response.data
+    }
+  }
 })
