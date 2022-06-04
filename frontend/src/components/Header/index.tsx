@@ -14,7 +14,7 @@ export function Header(){
     <header className={styles.headerContainer}>
       <div className={styles.headerContent}>
         <Link href="/dashboard">
-          <img src="/logo.svg" width={190} height={60} />
+          <img src="/logo.png" width={150} height={150} />
         </Link>
 
         <nav className={styles.menuNav}>
@@ -23,7 +23,7 @@ export function Header(){
           </Link>
 
           <Link href="/product">
-            <a>Cardapio</a>
+            <a>Serviços</a>
           </Link>   
 
           <button onClick={signOut}>

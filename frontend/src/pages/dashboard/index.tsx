@@ -98,7 +98,7 @@ export default function Dashboard({ orders }: HomeProps){
   return(
     <>
     <Head>
-      <title>Painel - Sujeito Pizzaria</title>
+      <title>Pedidos - FePet</title>
     </Head>
     <div>
       <Header/>
@@ -124,7 +124,7 @@ export default function Dashboard({ orders }: HomeProps){
             <section  key={item.id} className={styles.orderItem}> 
               <button onClick={ () => handleOpenModalView(item.id) }>
                 <div className={styles.tag}></div>
-                <span>Mesa {item.table}</span>
+                <span>Pedidos {item.table}</span>
               </button>
             </section>
           ))}

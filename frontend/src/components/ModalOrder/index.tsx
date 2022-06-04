@@ -10,7 +10,7 @@ interface ModalOrderProps{
   onRequestClose: () => void;
   order: OrderItemProps[];
   handleFinishOrder: (id: string) => void;
-}
+} 
 
 export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder  }: ModalOrderProps){
 
@@ -46,7 +46,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder  }
 
       <h2>Detalhes do pedido</h2>
       <span className={styles.table}>
-        Mesa: <strong>{order[0].order.table}</strong>
+        Pedido: <strong>{order[0].order.table}</strong>
       </span>
 
       {order.map( item => (
@@ -60,7 +60,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder  }
 
 
       <button className={styles.buttonOrder} onClick={ () => handleFinishOrder(order[0].order_id) }>
-        Concluir pedido
+        Concluir o serviço
       </button>
 
 
